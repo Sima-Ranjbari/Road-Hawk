@@ -6,7 +6,7 @@
 
 **Project for IBM AI Hackathon 2025 using WatsonX**
 
-A web application for reporting and analyzing road damage in Michigan using AI-powered image analysis via IBM WatsonX's `llama-3-2-90b-vision-instruct` model.
+A web application for reporting and analyzing road damage in Michigan using AI-powered image analysis via IBM WatsonX.ai
 
 ## 🎯 Overview
 
