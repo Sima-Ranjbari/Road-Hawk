@@ -14,6 +14,12 @@
 
         <div class="form-group">
             <label for="area">Michigan Area *</label>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <button type="button" id="useCurrentLocation" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    📍 Use Current Location
+                </button>
+                <span id="locationStatus" style="padding: 0.5rem; color: #757575; font-size: 0.9rem;"></span>
+            </div>
             <select id="area" name="area" required>
                 <option value="">-- Select a Michigan city --</option>
                 {% for city in cities %}
@@ -45,4 +51,93 @@
         </ul>
     </div>
 </div>
+
+<script>
+document.getElementById('useCurrentLocation').addEventListener('click', function() {
+    const statusEl = document.getElementById('locationStatus');
+    const areaSelect = document.getElementById('area');
+    const cityInput = document.getElementById('city');
+    const addressInput = document.getElementById('address');
+    
+    statusEl.textContent = 'Getting location...';
+    statusEl.style.color = '#1976d2';
+    
+    if (!navigator.geolocation) {
+        statusEl.textContent = 'Geolocation not supported';
+        statusEl.style.color = '#d32f2f';
+        return;
+    }
+    
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            // Use Nominatim (OpenStreetMap) reverse geocoding API
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.address) {
+                        const addr = data.address;
+                        const detectedCity = addr.city || addr.town || addr.village || '';
+                        const detectedState = addr.state || '';
+                        const detectedRoad = addr.road || '';
+                        
+                        // Check if location is in Michigan
+                        if (detectedState.toLowerCase().includes('michigan')) {
+                            // Try to match with our Michigan cities list
+                            const cities = Array.from(areaSelect.options).map(opt => opt.value);
+                            const matchedCity = cities.find(city => 
+                                city.toLowerCase() === detectedCity.toLowerCase()
+                            );
+                            
+                            if (matchedCity) {
+                                areaSelect.value = matchedCity;
+                                statusEl.textContent = '✓ Location set';
+                                statusEl.style.color = '#388e3c';
+                            } else {
+                                statusEl.textContent = 'City not in list - please select manually';
+                                statusEl.style.color = '#f57c00';
+                            }
+                            
+                            // Fill in city and address fields
+                            if (detectedCity && !cityInput.value) {
+                                cityInput.value = detectedCity;
+                            }
+                            if (detectedRoad && !addressInput.value) {
+                                addressInput.value = detectedRoad;
+                            }
+                        } else {
+                            statusEl.textContent = 'Location not in Michigan';
+                            statusEl.style.color = '#d32f2f';
+                        }
+                    } else {
+                        statusEl.textContent = 'Could not determine location';
+                        statusEl.style.color = '#d32f2f';
+                    }
+                })
+                .catch(error => {
+                    console.error('Geocoding error:', error);
+                    statusEl.textContent = 'Error getting address';
+                    statusEl.style.color = '#d32f2f';
+                });
+        },
+        function(error) {
+            let message = 'Location access denied';
+            if (error.code === error.TIMEOUT) {
+                message = 'Location request timed out';
+            } else if (error.code === error.POSITION_UNAVAILABLE) {
+                message = 'Location unavailable';
+            }
+            statusEl.textContent = message;
+            statusEl.style.color = '#d32f2f';
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+});
+</script>
 {% endblock %}

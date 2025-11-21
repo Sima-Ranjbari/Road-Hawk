@@ -261,6 +261,19 @@ def admin_panel():
     return render_template('admin_panel.html', reports=rows, areas=MICHIGAN_CITIES, selected_area=area, selected_sort=sort)
 
 
+@app.route('/admin/report/<int:report_id>')
+def admin_report_detail(report_id):
+    db = get_db()
+    cur = db.execute('SELECT * FROM reports WHERE id = ?', (report_id,))
+    report = cur.fetchone()
+    
+    if not report:
+        flash('Report not found')
+        return redirect(url_for('admin_panel'))
+    
+    return render_template('admin_report_detail.html', report=report)
+
+
 if __name__ == '__main__':
     with app.app_context():
         init_db()

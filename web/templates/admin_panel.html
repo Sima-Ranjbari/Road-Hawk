@@ -49,6 +49,7 @@
                     <th>Crack Type</th>
                     <th>Repair Level</th>
                     <th>Reported</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,11 +68,16 @@
                         <td><span class="badge">{{ report.crack_type }}</span></td>
                         <td><span class="badge repair-{{ report.repair_level }}">{{ report.repair_level|upper }}</span></td>
                         <td>{{ report.created_at }}</td>
+                        <td>
+                            <a href="{{ url_for('admin_report_detail', report_id=report.id) }}" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+                                View Details
+                            </a>
+                        </td>
                     </tr>
                     {% endfor %}
                 {% else %}
                     <tr>
-                        <td colspan="8" class="no-data">No reports found</td>
+                        <td colspan="9" class="no-data">No reports found</td>
                     </tr>
                 {% endif %}
             </tbody>
