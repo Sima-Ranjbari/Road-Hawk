@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="hero">
+    <h2>Welcome to Road Hawk</h2>
+    <p>Report road damage across Michigan with AI-powered analysis</p>
+</div>
+
+<div class="options">
+    <div class="option-card">
+        <h3>👤 User Portal</h3>
+        <p>Upload road images and get instant AI analysis of cracks and damage</p>
+        <a href="{{ url_for('upload') }}" class="btn btn-primary">Upload Road Image</a>
+    </div>
+
+    <div class="option-card">
+        <h3>🔐 Admin Portal</h3>
+        <p>View, filter, and manage all reported road damage across Michigan</p>
+        <a href="{{ url_for('admin') }}" class="btn btn-secondary">Admin Login</a>
+    </div>
+</div>
+
+<div class="info-section">
+    <h3>How It Works</h3>
+    <div class="steps">
+        <div class="step">
+            <div class="step-number">1</div>
+            <h4>Upload Image</h4>
+            <p>Take a photo of road damage and select your Michigan location</p>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <h4>AI Analysis</h4>
+            <p>Our WatsonX AI analyzes the image for crack types and severity</p>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <h4>Get Results</h4>
+            <p>Receive instant classification and repair priority recommendations</p>
+        </div>
+    </div>
+</div>
+
+<div class="crack-types">
+    <h3>Crack Types We Detect</h3>
+    <ul>
+        <li><strong>Longitudinal Crack:</strong> Cracks running parallel to the road centerline</li>
+        <li><strong>Transverse Crack:</strong> Cracks running perpendicular to the road centerline</li>
+        <li><strong>Alligator Crack:</strong> Interconnected cracks forming a pattern resembling alligator skin</li>
+        <li><strong>Pothole:</strong> Bowl-shaped holes in the road surface</li>
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="report-detail">
+    <div style="margin-bottom: 2rem;">
+        <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
+
+    <h2>📋 Report Details - ID #{{ report.id }}</h2>
+
+    <div class="detail-grid">
+        <div class="detail-section">
+            <h3>📍 Location Information</h3>
+            <div class="detail-card">
+                <div class="detail-row">
+                    <span class="detail-label">Area:</span>
+                    <span class="detail-value">{{ report.area }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">City/Township:</span>
+                    <span class="detail-value">{{ report.city or 'Not specified' }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Address/Description:</span>
+                    <span class="detail-value">{{ report.address or 'Not specified' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>🔍 Damage Analysis</h3>
+            <div class="detail-card">
+                <div class="detail-row">
+                    <span class="detail-label">Crack Type:</span>
+                    <span class="detail-value">
+                        <span class="badge" style="font-size: 1rem; padding: 0.4rem 1rem;">
+                            {{ report.crack_type or 'Unknown' }}
+                        </span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Repair Priority:</span>
+                    <span class="detail-value">
+                        <span class="badge repair-{{ report.repair_level }}" style="font-size: 1rem; padding: 0.4rem 1rem;">
+                            {{ report.repair_level|upper if report.repair_level else 'N/A' }}
+                        </span>
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Report Date:</span>
+                    <span class="detail-value">{{ report.created_at }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-section full-width">
+        <h3>📷 Damage Image</h3>
+        <div class="detail-card">
+            <div class="image-container">
+                <img src="{{ url_for('uploaded_file', filename=report.filename) }}" 
+                     alt="Road damage report #{{ report.id }}" 
+                     class="detail-image">
+            </div>
+            <div style="margin-top: 1rem; text-align: center;">
+                <a href="{{ url_for('uploaded_file', filename=report.filename) }}" 
+                   target="_blank" 
+                   class="btn btn-primary">
+                    📥 Open Full Size Image
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-section full-width">
+        <h3>📊 Crack Type Information</h3>
+        <div class="detail-card">
+            {% if report.crack_type == 'longitudinal crack' %}
+                <p><strong>Longitudinal Crack:</strong> A crack that runs parallel to the road's centerline. Often caused by poor joint construction, shrinkage of the pavement surface, or hardening of the asphalt.</p>
+                <p><em>Common causes:</em> Pavement fatigue, poor drainage, inadequate pavement support</p>
+            {% elif report.crack_type == 'transverse crack' %}
+                <p><strong>Transverse Crack:</strong> A crack that runs perpendicular (at right angles) to the road's centerline. Usually caused by thermal stresses or reflection cracking.</p>
+                <p><em>Common causes:</em> Temperature variations, shrinkage of asphalt layer, underlying pavement issues</p>
+            {% elif report.crack_type == 'alligator crack' %}
+                <p><strong>Alligator Crack:</strong> Interconnected cracks forming a pattern that resembles alligator skin or chicken wire. Indicates structural failure and is one of the most serious types of pavement distress.</p>
+                <p><em>Common causes:</em> Repeated traffic loading, inadequate structural support, poor drainage, thin pavement</p>
+            {% elif report.crack_type == 'pothole' %}
+                <p><strong>Pothole:</strong> A bowl-shaped hole in the road surface caused by the expansion and contraction of water that has seeped into the pavement. Typically forms after freeze-thaw cycles.</p>
+                <p><em>Common causes:</em> Water infiltration, freeze-thaw cycles, traffic stress, underlying pavement weakness</p>
+            {% else %}
+                <p>No detailed information available for this crack type.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-section full-width">
+        <h3>⚠️ Repair Priority Guidelines</h3>
+        <div class="detail-card">
+            {% if report.repair_level == 'immediate' %}
+                <div class="priority-info priority-immediate">
+                    <h4>🚨 IMMEDIATE Attention Required</h4>
+                    <p>This damage poses a significant safety hazard or risk of rapid deterioration. Repair should be scheduled within 1-7 days.</p>
+                    <ul>
+                        <li>May cause vehicle damage or safety hazards</li>
+                        <li>Risk of rapid expansion and worsening</li>
+                        <li>Could lead to more expensive repairs if delayed</li>
+                    </ul>
+                </div>
+            {% elif report.repair_level == 'moderate' %}
+                <div class="priority-info priority-moderate">
+                    <h4>⚡ MODERATE Priority</h4>
+                    <p>This damage should be addressed within 1-3 months to prevent further deterioration.</p>
+                    <ul>
+                        <li>Noticeable pavement distress</li>
+                        <li>Will worsen with continued traffic and weather exposure</li>
+                        <li>Should be included in upcoming maintenance schedule</li>
+                    </ul>
+                </div>
+            {% elif report.repair_level == 'low' %}
+                <div class="priority-info priority-low">
+                    <h4>📋 LOW Priority</h4>
+                    <p>Minor damage that can be addressed during routine maintenance cycles (3-12 months).</p>
+                    <ul>
+                        <li>Minimal impact on road quality</li>
+                        <li>Can be grouped with other nearby repairs</li>
+                        <li>Monitor for changes during routine inspections</li>
+                    </ul>
+                </div>
+            {% elif report.repair_level == 'none' %}
+                <div class="priority-info priority-none">
+                    <h4>✅ NO Immediate Action Required</h4>
+                    <p>Minimal or no damage detected. Continue routine monitoring.</p>
+                    <ul>
+                        <li>Surface is in good condition</li>
+                        <li>Include in regular inspection schedule</li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-actions">
+        <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">← Back to Dashboard</a>
+        <a href="{{ url_for('uploaded_file', filename=report.filename) }}" download class="btn btn-primary">📥 Download Image</a>
+    </div>
+</div>
+
+<style>
+.report-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.detail-section {
+    margin-bottom: 2rem;
+}
+
+.detail-section.full-width {
+    grid-column: 1 / -1;
+}
+
+.detail-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+
+.detail-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--text-light);
+    flex: 0 0 40%;
+}
+
+.detail-value {
+    flex: 1;
+    text-align: right;
+    font-weight: 500;
+}
+
+.image-container {
+    text-align: center;
+    background: var(--bg-light);
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.detail-image {
+    max-width: 100%;
+    max-height: 600px;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.priority-info {
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 5px solid;
+}
+
+.priority-info h4 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.priority-info ul {
+    margin-top: 1rem;
+    padding-left: 1.5rem;
+}
+
+.priority-info li {
+    margin-bottom: 0.5rem;
+}
+
+.priority-immediate {
+    background-color: #ffebee;
+    border-color: var(--danger-color);
+}
+
+.priority-immediate h4 {
+    color: var(--danger-color);
+}
+
+.priority-moderate {
+    background-color: #fff3e0;
+    border-color: var(--warning-color);
+}
+
+.priority-moderate h4 {
+    color: var(--warning-color);
+}
+
+.priority-low {
+    background-color: #e3f2fd;
+    border-color: var(--info-color);
+}
+
+.priority-low h4 {
+    color: var(--info-color);
+}
+
+.priority-none {
+    background-color: #e8f5e9;
+    border-color: var(--success-color);
+}
+
+.priority-none h4 {
+    color: var(--success-color);
+}
+
+.detail-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-color);
+}
+
+@media (max-width: 768px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .detail-value {
+        text-align: left;
+    }
+    
+    .detail-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

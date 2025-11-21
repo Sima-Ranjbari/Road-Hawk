@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="result-page">
+    <h2>✅ Analysis Complete</h2>
+    
+    <div class="result-card">
+        <h3>AI Analysis Results</h3>
+        
+        <div class="result-item">
+            <span class="label">Crack Type:</span>
+            <span class="value crack-type">{{ result.crack_type }}</span>
+        </div>
+        
+        <div class="result-item">
+            <span class="label">Repair Priority:</span>
+            <span class="value repair-level repair-{{ result.repair_level }}">{{ result.repair_level|upper }}</span>
+        </div>
+        
+        <div class="result-item">
+            <span class="label">Location:</span>
+            <span class="value">{{ area }}</span>
+        </div>
+    </div>
+
+    <div class="image-preview">
+        <h3>Uploaded Image</h3>
+        <img src="{{ url_for('uploaded_file', filename=filename) }}" alt="Uploaded road image">
+    </div>
+
+    {% if result.raw %}
+    <details class="raw-output">
+        <summary>View Raw AI Output</summary>
+        <pre>{{ result.raw }}</pre>
+    </details>
+    {% endif %}
+
+    <div class="actions">
+        <a href="{{ url_for('upload') }}" class="btn btn-primary">Upload Another Report</a>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
+{% endblock %}
